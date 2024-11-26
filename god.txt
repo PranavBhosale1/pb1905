@@ -1,0 +1,2407 @@
+1. Implement Stack and all its operations using Linked List.
+C++
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+
+    Node(int val) {
+        data = val;
+        next = nullptr;
+    }
+};
+
+Node* top = nullptr;
+
+void push(int val) {
+    Node* newNode = new Node(val);
+    newNode->next = top;
+    top = newNode;
+}
+
+void pop() {
+    if (top == nullptr) {
+        cout << "Stack underflow" << endl;
+        return;
+    }
+    Node* temp = top;
+    top = top->next;
+    cout << "Deleted " << temp->data << endl;
+    delete temp;
+}
+
+bool isEmpty() {
+    return top == nullptr;
+}
+
+void display() {
+    if (isEmpty()) {
+        cout << "Stack is empty" << endl;
+        return;
+    }
+    Node* temp = top;
+    while (temp != nullptr) {
+        cout << temp->data << " ";
+        temp = temp->next;
+    }
+    cout << endl;
+}
+
+int main() {
+    int choice, value;
+
+    while (true) {
+        cout << "\n1. Push\n2. Pop\n3. Display\n4. Exit\nEnter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to push: ";
+                cin >> value;
+                push(value);
+                break;
+            case 2:
+                pop();
+                break;
+            case 3:
+                display();
+                break;
+            case 4:
+                cout << "Exiting..." << endl;
+                return 0;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    }
+
+    return 0;
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+JAVA(Stack.java)
+import java.util.Scanner;
+
+class sNode {
+    int data;
+    sNode next;
+
+    public sNode(int data) {
+        this.data = data;
+        this.next = null;
+    }
+}
+
+class Stack {
+    private sNode top;
+
+    Stack() {
+        this.top = null;
+    }
+
+    boolean isEmpty() {
+        return top == null;
+    }
+
+    void push(int val) {
+        sNode node = new sNode(val);
+        if (isEmpty()) {
+            top = node;
+        } else {
+            node.next = top;
+            top = node;
+        }
+    }
+
+    public int pop() {
+        if (isEmpty()) {
+            System.out.println("Stack empty can't pop");
+            return -1;
+        } else {
+            int val = top.data;
+            top = top.next;
+            System.out.println("Deleted Node is " + val);
+            return val;
+        }
+    }
+
+    public int peek() {
+        if (isEmpty()) {
+            System.out.println("Stack empty can't peek");
+            return -1;
+        }
+        System.out.println("Topmost element: " + top.data);
+        return top.data;
+    }
+
+    public void search(int target) {
+        if (isEmpty()) {
+            System.out.println("Stack empty can't search");
+            return;
+        }
+        sNode curr = top;
+        int position = 0;
+        boolean flag = false;
+        while (curr != null) {
+            if (curr.data == target) {
+                System.out.println("Found " + target + " at position " + position);
+                flag = true;
+                break;
+            }
+            curr = curr.next;
+            position++;
+        }
+        if (!flag) {
+            System.out.println("Error 404: target not found :..(");
+        }
+    }
+
+    void display() {
+        if (isEmpty()) {
+            System.out.println("Stack empty");
+            return;
+        }
+        sNode curr = top;
+        while (curr != null) {
+            System.out.print(curr.data + " -> ");
+            curr = curr.next;
+        }
+        System.out.println("End");
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Stack stack = new Stack();
+        int choice, value;
+
+        do {
+            System.out.println("\nMenu:");
+            System.out.println("1. Push");
+            System.out.println("2. Pop");
+            System.out.println("3. Peek");
+            System.out.println("4. Search");
+            System.out.println("5. Display");
+            System.out.println("6. Exit");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter value to push: ");
+                    value = scanner.nextInt();
+                    stack.push(value);
+                    break;
+                case 2:
+                    stack.pop();
+                    break;
+                case 3:
+                    stack.peek();
+                    break;
+                case 4:
+                    System.out.print("Enter value to search: ");
+                    value = scanner.nextInt();
+                    stack.search(value);
+                    break;
+                case 5:
+                    stack.display();
+                    break;
+                case 6:
+                    System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Invalid choice, please try again.");
+            }
+        } while (choice != 6);
+
+        scanner.close();
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2. For given infix expression eg. a-b*c-d/e+f, convert it into postfix expression using stack and show the operations step by step.
+C++
+Simple
+#include <iostream>
+#include <stack>
+using namespace std;
+
+// Function to print the stack
+void printStack(stack<char> st) {
+    // Temporary stack to display elements in order
+    stack<char> temp;
+    while (!st.empty()) {
+        temp.push(st.top());
+        st.pop();
+    }
+    cout << "Stack: ";
+    while (!temp.empty()) {
+        cout << temp.top() << " ";
+        st.push(temp.top());
+        temp.pop();
+    }
+    cout << endl;
+}
+
+// Function to convert infix to postfix
+void post(string s) {
+    stack<char> st;
+    string ans;
+    for (int i = 0; i < s.length(); i++) {
+        cout << "Processing: " << s[i] << endl;
+        if (isalnum(s[i])) {
+            ans += s[i];
+        } else if (s[i] == '(') {
+            st.push(s[i]);
+        } else if (s[i] == ')') {
+            while (!st.empty() && st.top() != '(') {
+                ans += st.top();
+                st.pop();
+            }
+            st.pop(); // Pop the '('
+        } else {
+            while (!st.empty() && st.top() != '(' && 
+                   ((s[i] == '+' || s[i] == '-') && (st.top() == '*' || st.top() == '/')) ||
+                   ((s[i] == '+' || s[i] == '-') && (st.top() == '+' || st.top() == '-')) ||
+                   ((s[i] == '*' || s[i] == '/') && (st.top() == '*' || st.top() == '/'))) {
+                ans += st.top();
+                st.pop();
+            }
+            st.push(s[i]);
+        }
+        cout << "Current output: " << ans << endl;
+        printStack(st);
+    }
+
+    while (!st.empty()) {
+        ans += st.top();
+        st.pop();
+    }
+
+    cout << "Final output: " << ans << endl;
+}
+
+int main() {
+    string s;
+    cout << "Enter infix expression: ";
+    cin >> s;
+    post(s);
+    return 0;
+}
+ADVANCED
+#include <iostream>
+#include <stack>
+#include <cctype> // for isalnum
+using namespace std;
+
+// Function to print the stack
+void printStack(stack<char> st) {
+    // Temporary stack to display elements in order
+    stack<char> temp;
+    while (!st.empty()) {
+        temp.push(st.top());
+        st.pop();
+    }
+    cout << "Stack: ";
+    while (!temp.empty()) {
+        cout << temp.top() << " ";
+        st.push(temp.top());
+        temp.pop();
+    }
+    cout << endl;
+}
+
+// Function to define the precedence of operators
+int precedence(char op) {
+    if (op == '+' || op == '-') return 1;
+    if (op == '*' || op == '/') return 2;
+    return 0;
+}
+
+// Function to convert infix to postfix
+void post(string s) {
+    stack<char> st;
+    string ans;
+    for (int i = 0; i < s.length(); i++) {
+        // Insert '*' for implicit multiplication
+        if (i > 0 && (isalnum(s[i]) && (isalnum(s[i - 1]) || s[i - 1] == ')'))) {
+            st.push('*');
+            cout << "Inserted implicit '*'\n";
+        } else if (i > 0 && s[i] == '(' && (isalnum(s[i - 1]) || s[i - 1] == ')')) {
+            st.push('*');
+            cout << "Inserted implicit '*'\n";
+        }
+
+        cout << "Processing: " << s[i] << endl;
+        if (isalnum(s[i])) {
+            ans += s[i];
+        } else if (s[i] == '(') {
+            st.push(s[i]);
+        } else if (s[i] == ')') {
+            while (!st.empty() && st.top() != '(') {
+                ans += st.top();
+                st.pop();
+            }
+            st.pop(); // Pop the '('
+        } else { // Operator
+            while (!st.empty() && precedence(st.top()) >= precedence(s[i])) {
+                ans += st.top();
+                st.pop();
+            }
+            st.push(s[i]);
+        }
+        cout << "Current output: " << ans << endl;
+        printStack(st);
+    }
+
+    while (!st.empty()) {
+        ans += st.top();
+        st.pop();
+    }
+
+    cout << "Final output: " << ans << endl;
+}
+
+int main() {
+    string s;
+    cout << "Enter infix expression: ";
+    cin >> s;
+    post(s);
+    return 0;
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+JAVA(StringConvert.java)
+import java.util.Scanner;
+import java.util.Stack;
+
+public class StringConvert {
+    private static int precedence(char op) {
+        switch (op) {
+            case '+':
+            case '-':
+                return 1;
+            case '*':
+            case '/':
+                return 2;
+            case '^':
+                return 3;
+            default:
+                return -1;
+        }
+    }
+
+    public static String convertToPostfix(String infix) {
+        StringBuilder postfix = new StringBuilder();
+        Stack<Character> stack = new Stack<>();
+        for (int i = 0; i < infix.length(); i++) {
+            char ch = infix.charAt(i);
+            if (Character.isLetterOrDigit(ch)) {
+                postfix.append(ch);
+                System.out.println("String updated, added: " + ch);
+            } else if (ch == '(') {
+                stack.push(ch);
+                System.out.println("Pushed '(' into the stack");
+            } else if (ch == ')') {
+                while (!stack.isEmpty() && stack.peek() != '(') {
+                    char popped = stack.pop();
+                    postfix.append(popped);
+                    System.out.println("String updated, added: " + popped);
+                }
+                if (!stack.isEmpty() && stack.peek() == '(') {
+                    stack.pop(); // Remove the '('
+                    System.out.println("Removed '(' from stack");
+                }
+            } else {
+                while (!stack.isEmpty() && precedence(stack.peek()) >= precedence(ch)) {
+                    char popped = stack.pop();
+                    postfix.append(popped);
+                    System.out.println("String updated, added: " + popped);
+                }
+                stack.push(ch);
+                System.out.println("Pushed operator '" + ch + "' into the stack");
+            }
+        }
+        while (!stack.isEmpty()) {
+            char popped = stack.pop();
+            postfix.append(popped);
+            System.out.println("Clearing Stack... String updated, added: " + popped);
+        }
+        return postfix.toString();
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        boolean exit = false;
+
+        while (!exit) {
+            System.out.println("\nMenu:");
+            System.out.println("1. Convert Infix to Postfix");
+            System.out.println("2. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = sc.nextInt();
+            sc.nextLine(); // Consume the newline character after the integer input
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter the infix expression: ");
+                    String infix = sc.nextLine();
+                    String postfix = convertToPostfix(infix);
+                    System.out.println("\nInfix Expression: " + infix);
+                    System.out.println("Postfix Expression: " + postfix);
+                    break;
+                case 2:
+                    exit = true;
+                    System.out.println("Exiting the program...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+
+        sc.close();
+    }
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+3. Pizza parlour accepting maximum N orders. Orders are served in FCFS basis. Order once placed can’t be cancelled. Write a program to simulate the system using circular QUEUE.
+C++
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Assigner {
+private:
+    int front, rear, size, count;
+    string* orders; // dynamically allocated array to store orders
+
+public:
+    Assigner() {
+        cout << "Enter the number of orders: ";
+        cin >> size;
+        orders = new string[size];
+        front = rear = count = 0;
+    }
+
+    void enqueue() {
+        if (count == size) {
+            cout << "Cannot take more orders" << endl;
+        } else {
+            cout << "Enter Name of Order: ";
+            string orderName;
+            cin >> orderName;
+            orders[rear] = orderName;
+            rear = (rear + 1) % size;
+            count++;
+        }
+    }
+
+    void dequeue() {
+        if (count == 0) {
+            cout << "No order in queue" << endl;
+        } else {
+            cout << "Order for " << orders[front] << " is being served." << endl;
+            front = (front + 1) % size;
+            count--;
+        }
+    }
+
+    void display() {
+        if (count == 0) {
+            cout << "No orders to display" << endl;
+            return;
+        }
+        cout << "Pizza orders ready for the following people:" << endl;
+        for (int i = 0; i < count; ++i) {
+            int index = (front + i) % size;
+            cout << "Order ready for " << orders[index] << endl;
+        }
+    }
+};
+
+int main() {
+    Assigner c;
+    int choice;
+    do {
+        cout << "Refer to the Menu:" << endl;
+        cout << "Enter 1 to add order" << endl;
+        cout << "Enter 2 to remove the order" << endl;
+        cout << "Enter 3 to display the orders" << endl;
+        cout << "Enter 4 to exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+        switch (choice) {
+            case 1:
+                c.enqueue();
+                break;
+            case 2:
+                c.dequeue();
+                break;
+            case 3:
+                c.display();
+                break;
+            case 4:
+                cout << "Orders Processed. Exiting." << endl;
+                break;
+            default:
+                cout << "Invalid choice, try again." << endl;
+        }
+    } while (choice != 4);
+
+    return 0;
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+JAVA(Circular.java)
+import java.util.Scanner;
+
+public class Circular {
+    private int[] q;
+    private int front;
+    private int rear;
+    private int size;
+
+    Circular(int size) {
+        this.size = size;
+        this.q = new int[size];
+        this.rear = -1;
+        this.front = -1;
+    }
+
+    public boolean isFull() {
+        return ((rear + 1) % size == front);
+    }
+
+    public boolean isEmpty() {
+        return (front == -1 && rear == -1);
+    }
+
+    void enqueue(int val) {
+        if (isFull()) {
+            System.out.println("Orders List is Full, can't Enqueue");
+        } else if (front == -1 && rear == -1) {
+            front = 0;
+            rear = 0;
+            q[rear] = val;
+            System.out.println("Order requested Number: " + q[rear]);
+        } else {
+            rear = (rear + 1) % size;
+            q[rear] = val;
+            System.out.println("Order requested Number: " + q[rear]);
+        }
+    }
+
+    void dequeue() {
+        if (isEmpty()) {
+            System.out.println("List is Empty, can't Dequeue");
+        } else if (front == rear) { // Only one element left
+            System.out.println("Order is successfully Placed: " + q[front]);
+            front = -1;
+            rear = -1;
+        } else {
+            System.out.println("Order is successfully Placed: " + q[front]);
+            front = (front + 1) % size;
+        }
+    }
+
+    void display() {
+        if (isEmpty()) {
+            System.out.println("List is Empty, no orders to display");
+        } else {
+            System.out.print("List of Orders is: ");
+            int i = front;
+            while (i != rear) {
+                System.out.print(q[i] + " ");
+                i = (i + 1) % size;
+            }
+            System.out.println(q[rear]);
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter the size of the Orders List: ");
+        int size = sc.nextInt();
+        Circular c = new Circular(size);
+
+        while (true) {
+            System.out.println("\n--- Circular Queue Menu ---");
+            System.out.println("1. Enqueue (Add Order)");
+            System.out.println("2. Dequeue (Place Order)");
+            System.out.println("3. Display Orders");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter the Order Number to Enqueue: ");
+                    int val = sc.nextInt();
+                    c.enqueue(val);
+                    break;
+                case 2:
+                    c.dequeue();
+                    break;
+                case 3:
+                    c.display();
+                    break;
+                case 4:
+                    System.out.println("Exiting... Thank you!");
+                    sc.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice, please try again.");
+            }
+        }
+    }
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+4. Design a phone book application using suitable Trees data structure, enabling users to efficiently insert, search, update, and delete contacts.
+C++
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Contact {
+public:
+    string name;
+    int number;
+    
+    Contact() {
+        name = "";
+        number = 0;
+    }
+
+    Contact(string n, int num) {
+        name = n;
+        number = num;
+    }
+};
+
+class Node {
+public:
+    Contact contact;
+    Node* left;
+    Node* right;
+
+    Node() {
+        left = nullptr;
+        right = nullptr;
+    }
+
+    Node(string name, int num) {
+        contact.name = name;
+        contact.number = num;
+        left = nullptr;
+        right = nullptr;
+    }
+};
+
+class Tree {
+public:
+    Node* root;
+
+    Tree() {
+        root = nullptr;
+    }
+
+    // Insert contact directly in the tree
+    void insert(string name, int number) {
+        Node* newNode = new Node(name, number);
+        if (!root) {
+            root = newNode;
+            return;
+        }
+        Node* current = root;
+        while (true) {
+            if (name < current->contact.name) {
+                if (!current->left) {
+                    current->left = newNode;
+                    return;
+                }
+                current = current->left;
+            } else {
+                if (!current->right) {
+                    current->right = newNode;
+                    return;
+                }
+                current = current->right;
+            }
+        }
+    }
+
+    // Search for contact by name directly in the tree
+    void search(string name) {
+        Node* current = root;
+        while (current) {
+            if (name == current->contact.name) {
+                cout << "Contact found: " << current->contact.name << " - " << current->contact.number << endl;
+                return;
+            } else if (name < current->contact.name) {
+                current = current->left;
+            } else {
+                current = current->right;
+            }
+        }
+        cout << "Contact not found." << endl;
+    }
+
+    // Delete a contact by name directly in the tree
+    void deleteNode(string name) {
+        Node* current = root;
+        Node* parent = nullptr;
+
+        // Find node and parent
+        while (current && current->contact.name != name) {
+            parent = current;
+            if (name < current->contact.name) {
+                current = current->left;
+            } else {
+                current = current->right;
+            }
+        }
+
+        if (!current) {
+            cout << "Contact not found for deletion." << endl;
+            return;
+        }
+
+        // Case 1: Node has no children
+        if (!current->left && !current->right) {
+            if (current == root) {
+                root = nullptr;
+            } else if (parent->left == current) {
+                parent->left = nullptr;
+            } else {
+                parent->right = nullptr;
+            }
+            delete current;
+        }
+        // Case 2: Node has one child
+        else if (!current->left || !current->right) {
+            Node* child = current->left ? current->left : current->right;
+            if (current == root) {
+                root = child;
+            } else if (parent->left == current) {
+                parent->left = child;
+            } else {
+                parent->right = child;
+            }
+            delete current;
+        }
+        // Case 3: Node has two children
+        else {
+            Node* successorParent = current;
+            Node* successor = current->right;
+            while (successor->left) {
+                successorParent = successor;
+                successor = successor->left;
+            }
+            current->contact = successor->contact;
+            if (successorParent->left == successor) {
+                successorParent->left = successor->right;
+            } else {
+                successorParent->right = successor->right;
+            }
+            delete successor;
+        }
+    }
+
+    // Modify contact directly in the tree
+    void modify(string oldName, string newName, int newNumber) {
+        Node* current = root;
+        while (current) {
+            if (oldName == current->contact.name) {
+                current->contact.name = newName;
+                current->contact.number = newNumber;
+                return;
+            } else if (oldName < current->contact.name) {
+                current = current->left;
+            } else {
+                current = current->right;
+            }
+        }
+        cout << "Contact not found for modification." << endl;
+    }
+
+    // Display all contacts in sorted order directly
+    void display() {
+        displayRec(root);
+    }
+
+    void displayRec(Node* node) {
+        if (node) {
+            displayRec(node->left);
+            cout << node->contact.name << " - " << node->contact.number << endl;
+            displayRec(node->right);
+        }
+    }
+};
+
+int main() {
+    Tree t;
+    int exit = -1;
+    int option, number;
+    string name, newName;
+
+    while (exit != 0) {
+        cout << "0. Exit" << endl;
+        cout << "1. Insert" << endl;
+        cout << "2. Search" << endl;
+        cout << "3. Delete" << endl;
+        cout << "4. Modify" << endl;
+        cout << "5. Display" << endl;
+        cout << "Enter an operation: ";
+        cin >> option;
+
+        switch (option) {
+            case 1:
+                cout << "Enter the name for insertion: ";
+                cin >> name;
+                cout << "Enter the number for insertion: ";
+                cin >> number;
+                t.insert(name, number);
+                break;
+            case 2:
+                cout << "Enter the name to search: ";
+                cin >> name;
+                t.search(name);
+                break;
+            case 3:
+                cout << "Enter the name to delete: ";
+                cin >> name;
+                t.deleteNode(name);
+                break;
+            case 4:
+                cout << "Enter the name to modify: ";
+                cin >> name;
+                cout << "Enter the new name: ";
+                cin >> newName;
+                cout << "Enter the new number: ";
+                cin >> number;
+                t.modify(name, newName, number);
+                break;
+            case 5:
+                cout << "Displaying all contacts:" << endl;
+                t.display();
+                break;
+            case 0:
+                exit = 0;
+                cout << "Program exited" << endl;
+                break;
+            default:
+                cout << "Enter a valid operation" << endl;
+                break;
+        }
+    }
+    return 0;
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+JAVA(Main.java)
+import java.util.Scanner;
+
+class Node {
+    int data; // Value stored in the node
+    Node left; // Pointer to the left child
+    Node right; // Pointer to the right child
+
+    Node(int value) {
+        data = value;
+        left = null;
+        right = null;
+    }
+}
+
+class BST {
+    Node root;
+
+    BST() {
+        root = null;
+    }
+
+    void insert(int value) {
+        root = insert(root, value);
+        System.out.println("Inserted " + value);
+    }
+
+    boolean search(int value) {
+        return search(root, value);
+    }
+
+    void remove(int value) {
+        root = remove(root, value);
+        System.out.println("Deleted " + value);
+    }
+
+    void display() {
+        System.out.print("In-order Traversal: ");
+        inOrder(root);
+        System.out.println();
+    }
+
+    void update(int oldValue, int newValue) {
+        if (!search(oldValue)) {
+            System.out.println("Value " + oldValue + " not found in the tree.");
+            return;
+        }
+        remove(oldValue);
+        insert(newValue);
+        System.out.println("Updated value " + oldValue + " to " + newValue);
+    }
+
+    private Node insert(Node node, int value) {
+        if (node == null) {
+            return new Node(value);
+        }
+        if (value < node.data) {
+            node.left = insert(node.left, value);
+        } else if (value > node.data) {
+            node.right = insert(node.right, value);
+        }
+        return node;
+    }
+
+    private boolean search(Node node, int value) {
+        if (node == null) {
+            return false;
+        }
+        if (value == node.data) {
+            return true;
+        }
+        return value < node.data ? search(node.left, value) : search(node.right, value);
+    }
+
+    private Node remove(Node node, int value) {
+        if (node == null) {
+            return node;
+        }
+        if (value < node.data) {
+            node.left = remove(node.left, value);
+        } else if (value > node.data) {
+            node.right = remove(node.right, value);
+        } else {
+            if (node.left == null) {
+                return node.right;
+            } else if (node.right == null) {
+                return node.left;
+            }
+            Node temp = minValueNode(node.right);
+            node.data = temp.data;
+            node.right = remove(node.right, temp.data);
+        }
+        return node;
+    }
+
+    private Node minValueNode(Node node) {
+        Node current = node;
+        while (current != null && current.left != null) {
+            current = current.left;
+        }
+        return current;
+    }
+
+    private void inOrder(Node node) {
+        if (node != null) {
+            inOrder(node.left);
+            System.out.print(node.data + " ");
+            inOrder(node.right);
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        BST tree = new BST();
+        Scanner sc = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\n--- Binary Search Tree Menu ---");
+            System.out.println("1. Insert");
+            System.out.println("2. Search");
+            System.out.println("3. Delete");
+            System.out.println("4. Display");
+            System.out.println("5. Update");
+            System.out.println("6. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = sc.nextInt();
+
+            switch (choice) {
+                case 1: // Insert
+                    System.out.print("Enter value to insert: ");
+                    int insertValue = sc.nextInt();
+                    tree.insert(insertValue);
+                    break;
+
+                case 2: // Search
+                    System.out.print("Enter value to search: ");
+                    int searchValue = sc.nextInt();
+                    System.out.println("Searching for " + searchValue + ": " + (tree.search(searchValue) ? "Found" : "Not Found"));
+                    break;
+
+                case 3: // Delete
+                    System.out.print("Enter value to delete: ");
+                    int deleteValue = sc.nextInt();
+                    tree.remove(deleteValue);
+                    break;
+
+                case 4: // Display
+                    tree.display();
+                    break;
+
+                case 5: // Update
+                    System.out.print("Enter value to update: ");
+                    int oldValue = sc.nextInt();
+                    System.out.print("Enter new value: ");
+                    int newValue = sc.nextInt();
+                    tree.update(oldValue, newValue);
+                    break;
+
+                case 6: // Exit
+                    System.out.println("Exiting... Thank you!");
+                    sc.close();
+                    return;
+
+                default:
+                    System.out.println("Invalid choice! Please try again.");
+            }
+        }
+    }
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+5. Develop a threaded binary tree data structure allowing nodes to efficiently point to their inorder predecessor and successor. Implement an inorder traversal algorithm leveraging these threads.
+C++
+#include <iostream>
+using namespace std;
+
+class ThreadedNode {
+public:
+    int key;
+    bool leftThread = true;  // If true, left pointer is a thread
+    bool rightThread = true; // If true, right pointer is a thread
+    ThreadedNode *left = nullptr;
+    ThreadedNode *right = nullptr;
+
+    ThreadedNode(int value) {
+        key = value;
+    }
+};
+
+class ThreadedBinaryTree {
+public:
+    ThreadedNode *root = nullptr;
+
+    void insert(int value) {
+        ThreadedNode *newNode = new ThreadedNode(value);
+        if (root == nullptr) {
+            root = newNode;
+            return;
+        }
+
+        ThreadedNode *current = root;
+        while (true) {
+            if (value < current->key) {
+                if (current->leftThread) {
+                    newNode->left = current->left;
+                    newNode->right = current;
+                    current->leftThread = false;
+                    current->left = newNode;
+                    break;
+                } else {
+                    current = current->left;
+                }
+            } else {
+                if (current->rightThread) {
+                    newNode->right = current->right;
+                    newNode->left = current;
+                    current->rightThread = false;
+                    current->right = newNode;
+                    break;
+                } else {
+                    current = current->right;
+                }
+            }
+        }
+    }
+
+    void printThreads(ThreadedNode* node) {
+        if (node == nullptr) return;
+
+        if (node->leftThread)
+            cout << "Node " << node->key << " left thread points to: " << (node->left ? node->left->key : -1) << endl;
+        else
+            cout << "Node " << node->key << " left child is: " << (node->left ? node->left->key : -1) << endl;
+
+        if (node->rightThread)
+            cout << "Node " << node->key << " right thread points to: " << (node->right ? node->right->key : -1) << endl;
+        else
+            cout << "Node " << node->key << " right child is: " << (node->right ? node->right->key : -1) << endl;
+
+        // Traverse both left and right children
+        if (!node->leftThread)
+            printThreads(node->left);
+        if (!node->rightThread)
+            printThreads(node->right);
+    }
+
+    void inorderTraversal() {
+        if (root == nullptr) {
+            cout << "The tree is empty." << endl;
+            return;
+        }
+
+        ThreadedNode *current = root;
+        while (!current->leftThread) {
+            current = current->left;
+        }
+
+        while (current != nullptr) {
+            cout << current->key << " ";
+            if (current->rightThread)
+                current = current->right;
+            else {
+                current = current->right;
+                while (current != nullptr && !current->leftThread)
+                    current = current->left;
+            }
+        }
+        cout << endl;
+    }
+
+    void menu() {
+        int choice, value;
+        while (true) {
+            cout << "\nThreaded Binary Tree Menu" << endl;
+            cout << "1. Insert Node" << endl;
+            cout << "2. Inorder Traversal" << endl;
+            cout << "3. Print Thread Pointers" << endl;
+            cout << "4. Exit" << endl;
+            cout << "Enter your choice: ";
+            cin >> choice;
+
+            switch (choice) {
+                case 1:
+                    cout << "Enter value to insert: ";
+                    cin >> value;
+                    insert(value);
+                    break;
+                case 2:
+                    cout << "Inorder Traversal: ";
+                    inorderTraversal();
+                    break;
+                case 3:
+                    cout << "Printing thread pointers:" << endl;
+                    printThreads(root);
+                    break;
+                case 4:
+                    cout << "Exiting..." << endl;
+                    return;
+                default:
+                    cout << "Invalid choice. Please try again." << endl;
+            }
+        }
+    }
+};
+
+int main() {
+    ThreadedBinaryTree tree;
+    tree.menu();  // Launch the menu-driven system
+    return 0;
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+JAVA(Main.java)
+import java.util.Scanner;
+
+class ThreadNode {
+    int data;
+    ThreadNode left;
+    ThreadNode right;
+    Boolean isleft;
+    Boolean isright;
+
+    ThreadNode(int data) {
+        this.data = data;
+        this.left = null;
+        this.right = null;
+        this.isleft = true;
+        this.isright = true;
+    }
+}
+
+class Threaded {
+    private ThreadNode root;
+
+    Threaded() {
+        root = null;
+    }
+
+    void insert(int val) {
+        ThreadNode node = new ThreadNode(val);
+        if (root == null) {
+            root = node;
+            System.out.println("Inserted " + val + " as the root.");
+            return;
+        }
+        ThreadNode curr = root, parent = null;
+        while (curr != null) {
+            parent = curr;
+            if (val < curr.data) {
+                if (!curr.isleft) {
+                    curr = curr.left;
+                } else {
+                    break;
+                }
+            } else if (val > curr.data) {
+                if (!curr.isright) {
+                    curr = curr.right;
+                } else {
+                    break;
+                }
+            } else {
+                System.out.println("Duplicate data not allowed.");
+                return;
+            }
+        }
+        if (val < parent.data) {
+            node.left = parent.left;
+            node.right = parent;
+            parent.isleft = false;
+            parent.left = node;
+        } else {
+            node.right = parent.right;
+            node.left = parent;
+            parent.isright = false;
+            parent.right = node;
+        }
+        System.out.println("Inserted " + val + " into the tree.");
+    }
+
+    void inorder() {
+        if (root == null) {
+            System.out.println("Tree is Empty :(");
+            return;
+        }
+        ThreadNode curr = root;
+        while (!curr.isleft) {
+            curr = curr.left;
+        }
+        System.out.println("Inorder Traversal:");
+        while (curr != null) {
+            System.out.print(curr.data + " ");
+            if (curr.isright) {
+                curr = curr.right;
+            } else {
+                curr = curr.right;
+                while (curr != null && !curr.isleft) {
+                    curr = curr.left;
+                }
+            }
+        }
+        System.out.println();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Threaded tree = new Threaded();
+        Scanner sc = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\n--- Threaded Binary Tree Menu ---");
+            System.out.println("1. Insert");
+            System.out.println("2. Inorder Traversal");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter the value to insert: ");
+                    int val = sc.nextInt();
+                    tree.insert(val);
+                    break;
+                case 2:
+                    tree.inorder();
+                    break;
+                case 3:
+                    System.out.println("Exiting... Thank you!");
+                    sc.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice! Please try again.");
+            }
+        }
+    }
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+6. In a transportation network, construct an optimal road system connecting cities to minimize construction costs while ensuring every city is reachable. Construct Minimum Spanning Tree for this Network and find total cost using PRIMs Algorithm
+C++
+#include <iostream>
+#include <queue>
+#include <map>
+#include <climits>
+#include <vector>
+
+using namespace std;
+
+// Function to execute Prim's Algorithm and find the Minimum Spanning Tree (MST)
+void executePrimsAlgorithm(vector<bool> &inMST, vector<int> &parent, vector<int> &minDistance, map<int, vector<pair<int, int>>> &graph, int numNodes)
+{
+    // Priority queue to select the edge with the smallest weight first (min-heap)
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    pq.push({0, 0});  // Start from node 0 with weight 0
+    minDistance[0] = 0;  // Set distance of starting node to 0
+
+    while (!pq.empty())
+    {
+        // Extract the node with the smallest edge weight
+        pair<int, int> currentNode = pq.top();
+        pq.pop();
+        int node = currentNode.second;
+        int edgeWeight = currentNode.first;
+
+        if (inMST[node]) continue;  // Skip if node is already in MST (Minimum Spanning Tree)
+
+        inMST[node] = true;  // Include node in MST
+
+        // Traverse all adjacent nodes (neighbors)
+        for (auto &neighbor : graph[node])
+        {
+            int neighborNode = neighbor.first;
+            int weight = neighbor.second;
+
+            // If the neighbor node is not in MST and the edge weight is smaller than the current minimum distance
+            if (!inMST[neighborNode] && weight < minDistance[neighborNode])
+            {
+                pq.push({weight, neighborNode});  // Add neighbor to priority queue with new edge weight
+                parent[neighborNode] = node;  // Update the parent of the neighbor node
+                minDistance[neighborNode] = weight;  // Update the minimum distance for the neighbor node
+            }
+        }
+    }
+
+    // Output the MST edges and calculate the total cost
+    int totalCost = 0;
+    for (int i = 1; i < numNodes; ++i)  // Start from node 1 (0 is the root)
+    {
+        cout << "Edge: " << parent[i] << " - " << i << " with weight " << minDistance[i] << endl;
+        totalCost += minDistance[i];  // Accumulate the total cost of the MST
+    }
+    cout << "Total cost of MST: " << totalCost << endl;  // Output total cost of MST
+}
+
+// Function to display the menu and handle user input
+void displayMenu()
+{
+    int choice, numNodes, numEdges, startNode, endNode, edgeWeight;
+    map<int, vector<pair<int, int>>> graph;  // Map to store the graph (adjacency list)
+    vector<bool> inMST;   // Vector to track nodes included in MST
+    vector<int> parent;   // Vector to store the parent of each node in the MST
+    vector<int> minDistance;  // Vector to store the minimum distance to each node from MST
+
+    while (true)
+    {
+        // Display the main menu options
+        cout << "\nMenu:\n";
+        cout << "1. Input graph\n";
+        cout << "2. Execute Prim's Algorithm\n";
+        cout << "3. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            // Input graph (number of nodes, edges, and their weights)
+            cout << "Enter the number of nodes: ";
+            cin >> numNodes;
+
+            // Initialize vectors for MST (inMST), parent, and minimum distance
+            graph.clear();  // Clear any previous graph data
+            inMST.resize(numNodes, false);  // Initialize all nodes as not in MST
+            parent.resize(numNodes, -1);  // Initialize parent of each node to -1 (no parent)
+            minDistance.resize(numNodes, INT_MAX);  // Initialize minimum distance to INF
+
+            cout << "Enter the number of edges: ";
+            cin >> numEdges;
+
+            // Input edges (start node, end node, and edge weight)
+            for (int i = 0; i < numEdges; i++)
+            {
+                cout << "Enter edge (startNode endNode weight): ";
+                cin >> startNode >> endNode >> edgeWeight;
+                graph[startNode].push_back({endNode, edgeWeight});  // Add edge to adjacency list
+                graph[endNode].push_back({startNode, edgeWeight});  // Add reverse edge for undirected graph
+            }
+            break;
+
+        case 2:
+            // If no graph is available, prompt user to input a graph first
+            if (graph.empty())
+            {
+                cout << "No graph is available. Please input a graph first.\n";
+                break;
+            }
+
+            // Run Prim's Algorithm to find the MST
+            minDistance[0] = 0;  // Start Prim's algorithm from node 0
+            executePrimsAlgorithm(inMST, parent, minDistance, graph, numNodes);
+            break;
+
+        case 3:
+            // Exit the program
+            cout << "Exiting the program.\n";
+            return;
+
+        default:
+            // Handle invalid menu choice
+            cout << "Invalid choice! Please try again.\n";
+        }
+    }
+}
+
+// Main function that starts the program
+int main()
+{
+    displayMenu();  // Call the displayMenu function to begin the program
+    return 0;
+}
+//
+Enter your choice: 1
+Enter the number of nodes: 4
+Enter the number of edges: 5
+Enter edge (u v weight): 0 1 10
+Enter edge (u v weight): 0 2 6
+Enter edge (u v weight): 0 3 5
+Enter edge (u v weight): 1 3 15
+Enter edge (u v weight): 2 3 4
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+JAVA(Prims.java)
+import java.util.ArrayList;
+import java.util.PriorityQueue;
+import java.util.Scanner;
+import java.util.List;
+
+public class Prims {
+    static class Edge {
+        int src, dst, wt;
+
+        Edge(int src, int dst, int wt) {
+            this.src = src;
+            this.dst = dst;
+            this.wt = wt;
+        }
+    }
+
+    static class Pair {
+        int v, cost, parent;
+
+        Pair(int v, int cost, int parent) {
+            this.cost = cost;
+            this.v = v;
+            this.parent = parent;
+        }
+    }
+
+    public static void prims(ArrayList<Edge>[] graph) {
+        boolean[] vis = new boolean[graph.length];
+        PriorityQueue<Pair> pq = new PriorityQueue<>((a, b) -> a.cost - b.cost);
+        pq.add(new Pair(0, 0, -1));
+        int final_cost = 0;
+        List<String> mstEdges = new ArrayList<>();
+
+        while (!pq.isEmpty()) {
+            Pair curr = pq.remove();
+            if (!vis[curr.v]) {
+                vis[curr.v] = true;
+                final_cost += curr.cost;
+
+                if (curr.parent != -1) {
+                    mstEdges.add("Edge: " + curr.parent + " - " + curr.v + " (Cost: " + curr.cost + ")");
+                }
+
+                for (Edge e : graph[curr.v]) {
+                    if (!vis[e.dst]) {
+                        pq.add(new Pair(e.dst, e.wt, curr.v));
+                    }
+                }
+            }
+        }
+        System.out.println("Edges in the Minimum Spanning Tree:");
+        for (String edge : mstEdges) {
+            System.out.println(edge);
+        }
+        System.out.println("Total cost of Minimum Spanning Tree is: " + final_cost);
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        ArrayList<Edge>[] graphs = null; // Initialize graph variable
+        int vertices = 0;
+        while (true) {
+            System.out.println("====Prims Algorithm Menu====");
+            System.out.println("1. Enter the Given criteria for making graph : ");
+            System.out.println("2. Run Prims Algorithm and Display MST.");
+            System.out.println("3. Exit");
+            int choice = sc.nextInt();
+            switch (choice) {
+                case 1:
+                    System.out.println("Enter number of vertices :");
+                    vertices = sc.nextInt();
+                    @SuppressWarnings("unchecked")
+                    ArrayList<Edge>[] tempgraphs = new ArrayList[vertices];
+                    for (int i = 0; i < tempgraphs.length; i++) {
+                        tempgraphs[i] = new ArrayList<>();
+                    }
+                    System.out.println("Enter number of Edges :");
+                    int edges = sc.nextInt();
+                    System.out.println("Enter elements of the edges (Source, Destination, Weight) :");
+                    for (int i = 0; i < edges; i++) {
+                        int src = sc.nextInt();
+                        int dest = sc.nextInt();
+                        int wt = sc.nextInt();
+                        tempgraphs[src].add(new Edge(src, dest, wt));
+                        tempgraphs[dest].add(new Edge(dest, src, wt));
+                    }
+                    graphs = tempgraphs;
+                    System.out.println("Graph is Created");
+                    break;
+                case 2:
+                    if (graphs == null) {
+                        System.out.println("Please create a graph first using option 1");
+                    } else {
+                        System.out.println("MST of given graph is :");
+                        prims(graphs);
+                    }
+                    break;
+                case 3:
+                    System.out.println("Exiting the program. Goodbye!!!");
+                    sc.close();
+                    return;
+                default:
+                    System.out.println("Invalid Choice. Please try again.");
+            }
+        }
+    }
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+7. In a transportation network, construct an optimal road system connecting cities to minimize construction costs while ensuring every city is reachable. Construct Minimum Spanning Tree for this Network and find total cost using KRUSKAL'S Algorithm.
+C++
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <climits>
+
+using namespace std;
+
+// Function to find the representative of a set (with path compression)
+int findParent(int node, vector<int> &parent)
+{
+    if (parent[node] != node)
+    {
+        parent[node] = findParent(parent[node], parent);
+    }
+    return parent[node];
+}
+
+// Function to union two sets based on rank (union by rank)
+void unionSets(int u, int v, vector<int> &parent, vector<int> &rank)
+{
+    int rootU = findParent(u, parent);
+    int rootV = findParent(v, parent);
+
+    if (rootU != rootV)
+    {
+        // Union by rank: attach the smaller tree under the root of the larger tree
+        if (rank[rootU] > rank[rootV])
+        {
+            parent[rootV] = rootU;
+        }
+        else if (rank[rootU] < rank[rootV])
+        {
+            parent[rootU] = rootV;
+        }
+        else
+        {
+            parent[rootV] = rootU;
+            rank[rootU]++;
+        }
+    }
+}
+
+// Function to execute Kruskal's Algorithm and find the Minimum Spanning Tree (MST)
+void executeKruskalAlgorithm(vector<vector<int>> &edges, int numNodes)
+{
+    vector<int> parent(numNodes);
+    vector<int> rank(numNodes, 0);
+    int mstCost = 0;
+
+    // Initially, each node is its own parent
+    for (int i = 0; i < numNodes; ++i)
+    {
+        parent[i] = i;
+    }
+
+    // Sort edges by their weight (ascending order)
+    sort(edges.begin(), edges.end(), [](const vector<int> &a, const vector<int> &b) {
+        return a[2] < b[2];  // Compare by edge weight
+    });
+
+    // Process each edge and include it in the MST if it doesn't form a cycle
+    for (auto &edge : edges)
+    {
+        int u = edge[0];
+        int v = edge[1];
+        int weight = edge[2];
+
+        // If the nodes are not in the same set, include the edge in the MST
+        if (findParent(u, parent) != findParent(v, parent))
+        {
+            unionSets(u, v, parent, rank);
+            cout << "Edge: " << u << " - " << v << " with weight " << weight << endl;
+            mstCost += weight;  // Accumulate the total cost of the MST
+        }
+    }
+
+    cout << "Total cost of MST: " << mstCost << endl;
+}
+
+// Function to display the menu and handle user input
+void displayMenu()
+{
+    int choice, numNodes, numEdges, startNode, endNode, edgeWeight;
+    vector<vector<int>> edges;  // Vector to store the edges (startNode, endNode, weight)
+
+    while (true)
+    {
+        // Display the main menu options
+        cout << "\nMenu:\n";
+        cout << "1. Input graph\n";
+        cout << "2. Execute Kruskal's Algorithm\n";
+        cout << "3. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            // Input graph (number of nodes, edges, and their weights)
+            cout << "Enter the number of nodes: ";
+            cin >> numNodes;
+
+            cout << "Enter the number of edges: ";
+            cin >> numEdges;
+
+            // Input edges (start node, end node, and edge weight)
+            edges.clear();  // Clear any previous edges data
+            for (int i = 0; i < numEdges; i++)
+            {
+                cout << "Enter edge (startNode endNode weight): ";
+                cin >> startNode >> endNode >> edgeWeight;
+                edges.push_back({startNode, endNode, edgeWeight});  // Add edge to the list
+            }
+            break;
+
+        case 2:
+            // If no edges are available, prompt user to input a graph first
+            if (edges.empty())
+            {
+                cout << "No graph is available. Please input a graph first.\n";
+                break;
+            }
+
+            // Run Kruskal's Algorithm to find the MST
+            executeKruskalAlgorithm(edges, numNodes);
+            break;
+
+        case 3:
+            // Exit the program
+            cout << "Exiting the program.\n";
+            return;
+
+        default:
+            // Handle invalid menu choice
+            cout << "Invalid choice! Please try again.\n";
+        }
+    }
+}
+
+// Main function that starts the program
+int main()
+{
+    displayMenu();  // Call the displayMenu function to begin the program
+    return 0;
+}
+
+//
+Enter your choice: 1
+Enter the number of nodes: 4
+Enter the number of edges: 5
+Enter edge (startNode endNode weight): 0 1 10
+Enter edge (startNode endNode weight): 0 2 6
+Enter edge (startNode endNode weight): 0 3 5
+Enter edge (startNode endNode weight): 1 3 15
+Enter edge (startNode endNode weight): 2 3 4
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+JAVA(Assign7.java)
+import java.util.*;
+
+class Assign7 {
+    // Edge class to represent an edge in the graph
+    static class Edge implements Comparable<Edge> {
+        int src, dest, weight;
+
+        // Constructor
+        Edge(int src, int dest, int weight) {
+            this.src = src;
+            this.dest = dest;
+            this.weight = weight;
+        }
+
+        // Compare edges by weight
+        public int compareTo(Edge compareEdge) {
+            return this.weight - compareEdge.weight;
+        }
+    }
+
+    // Subset class for Union-Find
+    static class Subset {
+        int parent, rank;
+    }
+
+    // Find the parent of a node in the subset
+    static int find(Subset subsets[], int node) {
+        if (subsets[node].parent != node)
+            subsets[node].parent = find(subsets, subsets[node].parent);
+        return subsets[node].parent;
+    }
+
+    // Union of two subsets
+    static void union(Subset subsets[], int x, int y) {
+        int xRoot = find(subsets, x);
+        int yRoot = find(subsets, y);
+
+        if (subsets[xRoot].rank < subsets[yRoot].rank) {
+            subsets[xRoot].parent = yRoot;
+        } else if (subsets[xRoot].rank > subsets[yRoot].rank) {
+            subsets[yRoot].parent = xRoot;
+        } else {
+            subsets[yRoot].parent = xRoot;
+            subsets[xRoot].rank++;
+        }
+    }
+
+    // Kruskal's algorithm
+    static void kruskalMST(int vertices, List<Edge> edges) {
+        // Step 1: Sort all edges by weight
+        Collections.sort(edges);
+
+        // Resulting MST
+        List<Edge> result = new ArrayList<>();
+        Subset subsets[] = new Subset[vertices];
+
+        for (int i = 0; i < vertices; i++) {
+            subsets[i] = new Subset();
+            subsets[i].parent = i;
+            subsets[i].rank = 0;
+        }
+
+        // Step 2: Pick the smallest edge and add to MST if no cycle is formed
+        for (Edge edge : edges) {
+            int x = find(subsets, edge.src);
+            int y = find(subsets, edge.dest);
+
+            if (x != y) { // No cycle
+                result.add(edge);
+                union(subsets, x, y);
+            }
+        }
+
+        // Print the result
+        int totalCost = 0;
+        System.out.println("\nEdges in the MST:");
+        for (Edge edge : result) {
+            System.out.println(edge.src + " -- " + edge.dest + " == " + edge.weight);
+            totalCost += edge.weight;
+        }
+        System.out.println("Total cost of MST: " + totalCost);
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        List<Edge> edges = new ArrayList<>();
+        int vertices = 0;
+
+        while (true) {
+            System.out.println("\nMenu:");
+            System.out.println("1. Input number of vertices and edges");
+            System.out.println("2. Add edges");
+            System.out.println("3. Display MST");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = sc.nextInt();
+
+            switch (choice) {
+                case 1: // Input vertices
+                    System.out.print("Enter the number of vertices: ");
+                    vertices = sc.nextInt();
+                    edges.clear(); // Reset edges for a new graph
+                    break;
+
+                case 2: // Add edges
+                    if (vertices == 0) {
+                        System.out.println("Please input the number of vertices first (Option 1).");
+                    } else {
+                        System.out.print("Enter the number of edges: ");
+                        int edgesCount = sc.nextInt();
+                        System.out.println("Enter each edge in the format: src dest weight");
+                        for (int i = 0; i < edgesCount; i++) {
+                            int src = sc.nextInt();
+                            int dest = sc.nextInt();
+                            int weight = sc.nextInt();
+                            edges.add(new Edge(src, dest, weight));
+                        }
+                    }
+                    break;
+
+                case 3: // Display MST
+                    if (vertices == 0 || edges.isEmpty()) {
+                        System.out.println("Graph is empty. Please input data first (Options 1 and 2).");
+                    } else {
+                        kruskalMST(vertices, edges);
+                    }
+                    break;
+
+                case 4: // Exit
+                    System.out.println("Exiting...");
+                    sc.close();
+                    return;
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+8. You are tasked with optimizing delivery routes for a courier service in a city with multiple pickup and delivery locations. The courier service wants to minimize the total distance travelled while ensuring timely deliveries to all destinations. Find the shortest paths between these locations using the DIJKSTRA algorithm.
+C++
+
+#include <iostream>
+#include <queue>
+#include <map>
+#include <climits>
+#include <vector>
+
+using namespace std;
+
+// Function to execute Dijkstra's Algorithm and find the shortest paths
+void executeDijkstraAlgorithm(map<int, vector<pair<int, int>>> &graph, vector<int> &parent, vector<int> &distance, int startNode, int numNodes)
+{
+    // Priority queue to select the edge with the smallest weight first (min-heap)
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    pq.push({0, startNode});  // Start from the startNode with weight 0
+    distance[startNode] = 0;  // Set distance of starting node to 0
+
+    while (!pq.empty())
+    {
+        // Extract the node with the smallest edge weight
+        pair<int, int> currentNode = pq.top();
+        pq.pop();
+        int node = currentNode.second;
+        int edgeWeight = currentNode.first;
+
+        // Traverse all adjacent nodes (neighbors)
+        for (auto &neighbor : graph[node])
+        {
+            int neighborNode = neighbor.first;
+            int weight = neighbor.second;
+
+            // If the current path is shorter than the previously recorded one
+            if (distance[node] + weight < distance[neighborNode])
+            {
+                distance[neighborNode] = distance[node] + weight;
+                pq.push({distance[neighborNode], neighborNode});
+                parent[neighborNode] = node;  // Update the parent of the neighbor node
+            }
+        }
+    }
+
+    // Output the shortest path for each node from the startNode
+    for (int i = 0; i < numNodes; ++i)
+    {
+        if (distance[i] == INT_MAX)
+            cout << "Node " << i << " is unreachable from node " << startNode << endl;
+        else
+            cout << "Shortest path to node " << i << " is " << distance[i] << " with parent " << parent[i] << endl;
+    }
+}
+
+// Function to display the menu and handle user input
+void displayMenu()
+{
+    int choice, numNodes, numEdges, startNode, endNode, edgeWeight;
+    map<int, vector<pair<int, int>>> graph;  // Map to store the graph (adjacency list)
+    vector<int> parent;   // Vector to store the parent of each node in the shortest path tree
+    vector<int> distance;  // Vector to store the shortest distance to each node
+
+    while (true)
+    {
+        // Display the main menu options
+        cout << "\nMenu:\n";
+        cout << "1. Input graph\n";
+        cout << "2. Execute Dijkstra's Algorithm\n";
+        cout << "3. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            // Input graph (number of nodes, edges, and their weights)
+            cout << "Enter the number of nodes: ";
+            cin >> numNodes;
+
+            // Initialize vectors for Dijkstra's algorithm
+            graph.clear();  // Clear any previous graph data
+            parent.resize(numNodes, -1);  // Initialize parent of each node to -1 (no parent)
+            distance.resize(numNodes, INT_MAX);  // Initialize distance to INF
+
+            cout << "Enter the number of edges: ";
+            cin >> numEdges;
+
+            // Input edges (start node, end node, and edge weight)
+            for (int i = 0; i < numEdges; i++)
+            {
+                cout << "Enter edge (startNode endNode weight): ";
+                cin >> startNode >> endNode >> edgeWeight;
+                graph[startNode].push_back({endNode, edgeWeight});  // Add edge to adjacency list
+                // No need for reverse edge as the graph is directed
+            }
+            break;
+
+        case 2:
+            // If no graph is available, prompt user to input a graph first
+            if (graph.empty())
+            {
+                cout << "No graph is available. Please input a graph first.\n";
+                break;
+            }
+
+            // Get the start node for Dijkstra's algorithm
+            cout << "Enter the start node for Dijkstra's Algorithm: ";
+            cin >> startNode;
+
+            // Run Dijkstra's Algorithm to find the shortest paths
+            distance[startNode] = 0;  // Set the distance of the start node to 0
+            executeDijkstraAlgorithm(graph, parent, distance, startNode, numNodes);
+            break;
+
+        case 3:
+            // Exit the program
+            cout << "Exiting the program.\n";
+            return;
+
+        default:
+            // Handle invalid menu choice
+            cout << "Invalid choice! Please try again.\n";
+        }
+    }
+}
+
+// Main function that starts the program
+int main()
+{
+    displayMenu();  // Call the displayMenu function to begin the program
+    return 0;
+}
+//
+Enter your choice: 1
+Enter the number of nodes: 5
+Enter the number of edges: 7
+Enter edge (startNode endNode weight): 0 1 10
+Enter edge (startNode endNode weight): 0 2 5
+Enter edge (startNode endNode weight): 1 2 2
+Enter edge (startNode endNode weight): 1 3 1
+Enter edge (startNode endNode weight): 2 3 9
+Enter edge (startNode endNode weight): 2 4 3
+Enter edge (startNode endNode weight): 3 4 4
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+JAVA(Dijkstra.java)
+import java.util.*;
+
+public class Dijkstra {
+    static class Edge {
+        int src, dst, wt;
+
+        Edge(int src, int dst, int wt) {
+            this.src = src;
+            this.dst = dst;
+            this.wt = wt;
+        }
+    }
+
+    static class Pair {
+        int v, cost;
+
+        Pair(int v, int cost) {
+            this.v = v;
+            this.cost = cost;
+        }
+    }
+
+    public static void DijkstraAlgo(ArrayList<Edge>[] graph, int source) {
+        int[] dist = new int[graph.length];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[source] = 0;
+
+        PriorityQueue<Pair> pq = new PriorityQueue<>((a, b) -> a.cost - b.cost);
+        pq.add(new Pair(source, 0));
+
+        boolean[] vis = new boolean[graph.length];
+        while (!pq.isEmpty()) {
+            Pair curr = pq.remove();
+
+            if (!vis[curr.v]) {
+                vis[curr.v] = true;
+
+                for (Edge e : graph[curr.v]) {
+                    if (!vis[e.dst] && dist[curr.v] + e.wt < dist[e.dst]) {
+                        dist[e.dst] = dist[curr.v] + e.wt;
+                        pq.add(new Pair(e.dst, dist[e.dst]));
+                    }
+                }
+            }
+        }
+        System.out.println("Shortest distances from source " + source + ":");
+        for (int i = 0; i < dist.length; i++) {
+            System.out.println("Vertex " + i + " -> " + dist[i]);
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        ArrayList<Edge>[] graph = null;
+
+        while (true) {
+            System.out.println("\n===== Dijkstra's Algorithm Menu =====");
+            System.out.println("1. Create Graph");
+            System.out.println("2. Run Dijkstra's Algorithm");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter the number of vertices: ");
+                    int vertices = sc.nextInt();
+                    graph = new ArrayList[vertices];
+                    for (int i = 0; i < vertices; i++) {
+                        graph[i] = new ArrayList<>();
+                    }
+
+                    System.out.print("Enter the number of edges: ");
+                    int edges = sc.nextInt();
+                    System.out.println("Enter edges (source destination weight):");
+                    for (int i = 0; i < edges; i++) {
+                        int src = sc.nextInt();
+                        int dst = sc.nextInt();
+                        int wt = sc.nextInt();
+                        graph[src].add(new Edge(src, dst, wt));
+                        graph[dst].add(new Edge(dst, src, wt));
+                    }
+                    System.out.println("Graph created successfully.");
+                    break;
+
+                case 2:
+                    if (graph == null) {
+                        System.out.println("Please create a graph first (option 1).");
+                    } else {
+                        System.out.print("Enter the source vertex: ");
+                        int source = sc.nextInt();
+                        if (source >= graph.length || source < 0) {
+                            System.out.println("Invalid source vertex. Try again.");
+                        } else {
+                            DijkstraAlgo(graph, source);
+                        }
+                    }
+                    break;
+
+                case 3:
+                    System.out.println("Exiting the program. Goodbye!");
+                    sc.close();
+                    return;
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+9. Read the marks obtained by students of second year in an online examination of particular subject. Find out the maximum and minimum marks obtained in that subject. Use Min Heap data structure and find the lowest marks.
+
+10. Read the marks obtained by students of second year in an online examination of a particular subject. Find out the maximum and minimum marks obtained in that subject. Use Max Heap data structure and find the highest marks.
+C++ Advanced
+
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+
+void max_heapify(vector<int> &vec, int n, int i) {
+    int largest = i;
+    int left = 2 * i;
+    int right = 2 * i + 1;
+
+    if (left <= n && vec[left] > vec[largest]) {
+        largest = left;
+    }
+    if (right <= n && vec[right] > vec[largest]) {
+        largest = right;
+    }
+    if (largest != i) {
+        swap(vec[i], vec[largest]);
+        max_heapify(vec, n, largest);
+    }
+}
+
+void build_max_heap(vector<int> &vec, int n) {
+    for (int i = n / 2; i >= 1; i--) {
+        max_heapify(vec, n, i);
+    }
+}
+
+void min_heapify(vector<int> &vec, int n, int i) {
+    int smallest = i;
+    int left = 2 * i;
+    int right = 2 * i + 1;
+
+    if (left <= n && vec[left] < vec[smallest]) {
+        smallest = left;
+    }
+    if (right <= n && vec[right] < vec[smallest]) {
+        smallest = right;
+    }
+    if (smallest != i) {
+        swap(vec[i], vec[smallest]);
+        min_heapify(vec, n, smallest);
+    }
+}
+
+void build_min_heap(vector<int> &vec, int n) {
+    for (int i = n / 2; i >= 1; i--) {
+        min_heapify(vec, n, i);
+    }
+}
+
+void display_heap(const vector<int> &vec, int n) {
+    for (int i = 1; i <= n; i++) {
+        cout << vec[i] << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    int no_of_students;
+    cout << "Enter the number of students: ";
+    cin >> no_of_students;
+    vector<int> vec(no_of_students + 1);
+    for (int i = 1; i <= no_of_students; i++) {
+        cin >> vec[i];
+    }
+
+    vector<int> max_vec = vec;
+    vector<int> min_vec = vec;
+
+    int choice;
+    do {
+        cout << "\nMenu:\n";
+        cout << "1. Build Max Heap and Display\n";
+        cout << "2. Build Min Heap and Display\n"; 	
+        cout << "3. Display Maximum Value\n";
+        cout << "4. Display Minimum Value\n";
+        cout << "5. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                max_vec[0] = INT_MIN;
+                build_max_heap(max_vec, no_of_students);
+                cout << "Max Heap: ";
+                display_heap(max_vec, no_of_students);
+                break;
+            case 2:
+                min_vec[0] = INT_MAX;
+                build_min_heap(min_vec, no_of_students);
+                cout << "Min Heap: ";
+                display_heap(min_vec, no_of_students);
+                break;
+            case 3:
+                max_vec[0] = INT_MIN;
+                build_max_heap(max_vec, no_of_students);
+                cout << "Maximum value is " << max_vec[1] << endl;
+                break;
+            case 4:
+                min_vec[0] = INT_MAX;
+                build_min_heap(min_vec, no_of_students);
+                cout << "Minimum value is " << min_vec[1] << endl;
+                break;
+            case 5:
+                cout << "Exiting...\n";
+                break;
+            default:
+                cout << "Invalid choice, please try again.\n";
+        }
+    } while (choice != 5);
+
+    return 0;
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+JAVA()
+import java.util.*;
+
+public class MinHeap {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        PriorityQueue<Integer> pq = new PriorityQueue<>(); // MIN HEAP
+
+        while (true) {
+            System.out.println("\nMenu:");
+            System.out.println("1. Insert elements into the heap");
+            System.out.println("2. Display the minimum element");
+            System.out.println("3. Remove the minimum element");
+            System.out.println("4. Display all elements in the heap");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            
+            int choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter the number of elements to insert: ");
+                    int n = sc.nextInt();
+                    System.out.println("Enter the elements:");
+                    for (int i = 0; i < n; i++) {
+                        int element = sc.nextInt();
+                        pq.add(element);
+                    }
+                    System.out.println("Elements inserted successfully.");
+                    break;
+
+                case 2:
+                    if (!pq.isEmpty()) {
+                        System.out.println("Minimum element in the heap: " + pq.peek());
+                    } else {
+                        System.out.println("Heap is empty.");
+                    }
+                    break;
+
+                case 3:
+                    if (!pq.isEmpty()) {
+                        System.out.println("Removed the minimum element: " + pq.poll());
+                    } else {
+                        System.out.println("Heap is empty.");
+                    }
+                    break;
+
+                case 4:
+                    if (!pq.isEmpty()) {
+                        System.out.println("All elements in the heap: " + pq);
+                    } else {
+                        System.out.println("Heap is empty.");
+                    }
+                    break;
+
+                case 5:
+                    System.out.println("Exiting program. Goodbye!");
+                    sc.close();
+                    return;
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+C++ SIMPLE
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <functional> // for std::greater
+using namespace std;
+
+void display_heap(priority_queue<int> pq) {
+    // Display the elements of the priority queue
+    while (!pq.empty()) {
+        cout << pq.top() << " ";
+        pq.pop();
+    }
+    cout << endl;
+}
+
+int main() {
+    int no_of_students;
+    cout << "Enter the number of students: ";
+    cin >> no_of_students;
+
+    // Create a max-heap (default behavior of priority_queue)
+    priority_queue<int> max_pq;
+    // Create a min-heap by passing std::greater<int> to the priority_queue
+    priority_queue<int, vector<int>, greater<int>> min_pq;
+
+    cout << "Enter the scores of the students: ";
+    for (int i = 0; i < no_of_students; i++) {
+        int score;
+        cin >> score;
+        max_pq.push(score); // Insert into max heap
+        min_pq.push(score); // Insert into min heap
+    }
+
+    int choice;
+    do {
+        cout << "\nMenu:\n";
+        cout << "1. Build Max Heap and Display\n";
+        cout << "2. Build Min Heap and Display\n";
+        cout << "3. Display Maximum Value\n";
+        cout << "4. Display Minimum Value\n";
+        cout << "5. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Max Heap: ";
+                display_heap(max_pq);
+                break;
+            case 2:
+                cout << "Min Heap: ";
+                display_heap(min_pq);
+                break;
+            case 3:
+                // Display the maximum value in the max-heap
+                if (!max_pq.empty()) {
+                    cout << "Maximum value is " << max_pq.top() << endl;
+                } else {
+                    cout << "Heap is empty.\n";
+                }
+                break;
+            case 4:
+                // Display the minimum value in the min-heap
+                if (!min_pq.empty()) {
+                    cout << "Minimum value is " << min_pq.top() << endl;
+                } else {
+                    cout << "Heap is empty.\n";
+                }
+                break;
+            case 5:
+                cout << "Exiting...\n";
+                break;
+            default:
+                cout << "Invalid choice, please try again.\n";
+        }
+    } while (choice != 5);
+
+    return 0;
+}
